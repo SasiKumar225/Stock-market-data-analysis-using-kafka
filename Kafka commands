@@ -1,0 +1,40 @@
+# ssh into the ec2 instance using the terminal or ec2 connect
+# After ssh into ec2 instance download the kafka
+
+wget https://downloads.apache.org/kafka/3.6.1/kafka_2.12-3.6.1.tgz
+
+# 2.12-3.6.1 is the latest version when i did this proj
+
+tar -xvf kafka_2.12-3.6.1.tgz
+# since kafka runs on java install java
+
+sudo yum install java-1.8.0-openjdk
+java --version
+
+cd kafka_2.12-3.6.1
+
+--------start zookeeper---------
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+--------start kafkaserver-------
+# open the new terminal and ssh into that terminal
+cd kafka_2.12-3.6.1
+bin/kafka-server-start.sh config/server.properties
+
+# since we are pointing it to the private server change the ip to public in "advertised_listener"
+
+sudo nano config/server.properties   
+
+-----create topic ----
+#duplicate the terminal and ssh into it 
+
+cd kafka_2.12-3.6.1
+bin/kafka-topics.sh --create --topic [name that u want to create] --bootstrap-server {Put the Public IP of your EC2 Instance:9092} --replication-factor 1 --partitions 1
+----start producer ---
+bin/kafka-console-producer.sh --topic [name that u want to create]  --bootstrap-server {Put the Public IP of your EC2 Instance:9092} 
+
+---start consumer---
+# duplicate the terminal and ssh into it 
+cd kafka_2.12-3.6.1
+bin/kafka-console-consumer.sh --topic [name that u want to create] --bootstrap-server {Put the Public IP of your EC2 Instance:9092}
+
